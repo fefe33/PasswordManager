@@ -1,0 +1,6 @@
+#app config
+
+#this is the name of the database
+database=test1.db
+#this is the path to the database (where %data% == this_files_root_directory/data, %home% == home directory)
+path = %file%
