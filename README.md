@@ -1,18 +1,18 @@
-## PasswordManager
+# PasswordManager
 a terminal based password manager with simple "encryption"
 
 ## usage
 the app is used in a manner much similar to the metasploit-framework. upon launch the user is thrown into a shell-like prompt in which different unix-like commands may be typed.
 
-# application structure
+## application structure
 the application requires users create user accounts under which records may be saved, modified, etc. commands differ based on whether a user is logged in or not. password related tables include fields for storing the username, password and website.  
 
-# IMPORTANT NOTE
+## IMPORTANT NOTE
 the algorithm for encryption isnt (as far as I know) secure by any means. but i wrote the class with modifyiablity in mind so that ideally one could write or import a library containing a more secure cypher and still make it work with relative ease. as far as i know, it should work with most symmetric encryption algorithms (so long as it takes a 256 bit or less key).
 
 ## syntax
 many commands allow for both prompt based input or argument based input. indexes may also be specified in certain contexts.
-# when logged out
+## when logged out
 <ul>
   <li>new -- shows user set of prompts to set up a new master user account</li>
   <li>update &lt;index&gt; &lt;field or field index&gt; **if field is not password &lt;value&gt;-- update an existing master user or master user's password. a value may not be repeated</li>
@@ -21,7 +21,7 @@ many commands allow for both prompt based input or argument based input. indexes
   <li>users -- lists all created users</li>
   <li>whoami -- will always return "not logged in" in this context</li>
 </ul>
-# when logged in
+## when logged in
 <ul>
   <li>logout -- logs out the master user that is currently logged in </li>
   <li>whoami -- returns the name of the current master user</li>
