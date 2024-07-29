@@ -12,6 +12,7 @@ the algorithm for encryption isnt (as far as I know) secure by any means. but i 
 
 ## syntax
 many commands allow for both prompt based input or argument based input. indexes may also be specified in certain contexts.
+
 ## when logged out
 <ul>
   <li>new -- shows user set of prompts to set up a new master user account</li>
@@ -21,7 +22,8 @@ many commands allow for both prompt based input or argument based input. indexes
   <li>users -- lists all created users</li>
   <li>whoami -- will always return "not logged in" in this context</li>
 </ul>
-## when logged in
+
+# when logged in
 <ul>
   <li>logout -- logs out the master user that is currently logged in </li>
   <li>whoami -- returns the name of the current master user</li>
