@@ -10,7 +10,7 @@ the database can be configured via the config file (%filepath%/cfg/config). by d
 
 
 ## IMPORTANT NOTE
-the algorithm for encryption isnt (as far as I know) secure by any means. but i wrote the class with modifyiablity in mind so that ideally one could write or import a library containing a more secure cypher and still make it work with relative ease. as far as i know, it should work with most symmetric encryption algorithms (so long as it takes a 256 bit or less key).
+the algorithm for encryption isnt (as far as I know) secure by any means. but i wrote the class with modifyiablity in mind so that ideally one could write or import a library containing a more secure cipher and still make it work with relative ease. as far as i know, it should work with most symmetric encryption algorithms (so long as it takes a 256 bit or less key).
 
 ## syntax
 many commands allow for both prompt based input or argument based input. indexes may also be specified in certain contexts.
