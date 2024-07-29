@@ -23,14 +23,15 @@ many commands allow for both prompt based input or argument based input. indexes
   <li>whoami -- will always return "not logged in" in this context</li>
 </ul>
 
-# when logged in
+## when logged in
 <ul>
   <li>logout -- logs out the master user that is currently logged in </li>
   <li>whoami -- returns the name of the current master user</li>
   <li>ls -- when provided with no arguments lists all records. when run with -u <filter> will filter by username, and -s <filter> to filter by site (regex not supported)</li>
   <li>update <index> </li>
 </ul>
-# global commands
+    
+## global commands
 <ul>
   <li>clear or clc -- clears screen</li>
   <li>exit -- in most contexts, one should be able to exit by simply typing exit.</li>
