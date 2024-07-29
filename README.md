@@ -30,6 +30,7 @@ many commands allow for both prompt based input or argument based input. indexes
 </ul>
 # global commands
 <ul>
+  <li>clear or clc -- clears screen</li>
   <li>exit -- in most contexts, one should be able to exit by simply typing exit.</li>
   <li>(not implimented) help -- brings up help menu</li>
 </ul>
