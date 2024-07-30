@@ -30,7 +30,7 @@ many commands allow for both prompt based input or argument based input. indexes
   <li>logout -- logs out the master user that is currently logged in </li>
   <li>whoami -- returns the name of the current master user</li>
   <li>ls -- when provided with no arguments lists all records. when run with -u <filter> will filter by username, and -s <filter> to filter by site (regex not supported)</li>
-  <li>update <index> </li>
+  <li>update &lt;index&gt; &lt;field&gt;=&lt;value&gt; -- updates a username, site, or password of a specific record by index </li>
 </ul>
     
 ## global commands
