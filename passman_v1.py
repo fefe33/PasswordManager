@@ -470,7 +470,63 @@ class app:
         )
     
     def help(self):
-        pass
+        print(
+            '''
+            commands are different depending on whether you are logged in or not:
+            note most fields can be entered either directly through the command line or via prompts (in case something is forgotten)
+            
+            commands referenced by 'index' are referring to the index of either the 'users' command (which is only available when not logged in), or the 'ls' command. 
+            syntax as follows:
+                --when the user is logged out of their master account:
+                    users
+                        lists all master users
+                    login <user or index>
+                        logs a master user in
+                    new
+                        prompts user to add master account. this cannot be run with multiple args
+                    update <user or index> <field or index 1-2> <value if !(field==password)>
+                        updates a user. can only be run with 3 args when not altering a password
+                    rm <user or index>
+                        removes a master account
+
+                --when the user is logged into their master account:
+                    ls [-u -s] <field or index 1-3> <filter>
+                        lists all username/password/site sets
+                        flags:
+                            -s -- filters by site
+                            -u -- filters by username
+                    rm <index>
+                        removes record at index <index>
+                    new <username> <password> <site>
+                        adds a new set of values to the database. if less than 3 args are provided user will be prompted
+                    logout
+                        logs out of the current master account
+                    update <index> <field or index 1-3> <value>
+                        updates field <field> in record at index <index> to value <value>
+                        fields/indexes include:
+                            1 - username
+                            2 - password
+                            3 - site
+                        *for example the command 'update 5 2 abc123' would update the password of record 5 to "abc123"
+                
+                certain commands can be run whether a user is logged in or out
+                    --global cmds
+                        exit
+                            exit the program
+                        help
+                            print this help menu
+                        clc/clear
+                            clear the screen
+                        whoami
+                            prints the currently logged in user
+            
+            '''
+
+
+
+
+            
+        )
 
     def logout(self):
         if not self.logged_in():
@@ -493,7 +549,7 @@ class app:
             
         '''
         c = dict() 
-        with open('cfg/config', 'r') as cfg:
+        with open(os.path.realpath(os.path.dirname(__file__))+'/cfg/config', 'r') as cfg:
             for i in cfg:
                 if i.startswith('#') or '=' not in i:
                     continue
@@ -1536,7 +1592,9 @@ class app:
             if cmd.lower()=='exit':
                 print('goodbye')
                 break
-            if cmd.lower() == 'clear' or cmd.lower() == 'clc':
+            elif cmd.lower()=='help':
+                self.help()
+            elif  cmd.lower() == 'clear' or cmd.lower() == 'clc':
                 subprocess.run('clear')
             else:
                 self.handle_cmd(cmd)
