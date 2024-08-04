@@ -35,7 +35,7 @@ many commands allow for both prompt based input or argument based input. indexes
     
 ## global commands
 <ul>
-  <li>backup <path> -- makes bhackup copy of current database at path &lt;path&gt;</li>
+  <li>backup <path> -- makes backup copy of current database at path &lt;path&gt;</li>
   <li>clear or clc -- clears screen</li>
   <li>exit -- in most contexts, one should be able to exit by simply typing exit.</li>
   <li>help -- brings up help menu</li>
