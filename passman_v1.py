@@ -82,17 +82,12 @@ class database:
         self.c = None
         self.connected = lambda: self.c!=None and self.Cx!=None
 
-    #connect to db (with table detection / automatic build and repair)
-    def DB_connect(self):
-        if self.connected():
-            print('(DB) cannot connect. connection already established')
-            return False
-
-
+    
+    def build_DB(self):
+        #build the database 
         #connect to the specified database
-        if not self.connected():
-            self.Cx = sqlite3.connect(self.database)
-            self.c = self.Cx.cursor()
+        self.Cx = sqlite3.connect(self.database)
+        self.c = self.Cx.cursor()
         exists = dict()
         #check for/build the tables
         self.c.execute('SELECT name FROM sqlite_master WHERE type="table" AND name="Users"')
@@ -125,6 +120,20 @@ class database:
             except: pass
             self.Cx.commit()
             print('build success')
+        self.c.close()
+        return True
+
+    #connect to db (with table detection / automatic build and repair)
+    def DB_connect(self):
+        if self.connected():
+            print('(DB) cannot connect. connection already established')
+            return False
+
+        #connect to the specified database
+        elif not self.connected():
+            self.Cx = sqlite3.connect(self.database)
+            self.c = self.Cx.cursor()
+    
         return True
 
     def DB_disconnect(self):
@@ -433,11 +442,48 @@ class database:
 class app:
     def __init__(self):
         #definitions
-        self.storage = None # self.storage is define by the configuration file
+        c = dict() 
+        with open(os.path.realpath(os.path.dirname(__file__))+'/cfg/config', 'r') as cfg:
+            for i in cfg:
+                if i.startswith('#') or '=' not in i:
+                    continue
+                else:
+                    if '#' in i and '=' in i.split('#')[0]:
+                        i = i.split('#')[0]
+                        kv =i.split('=')
+                    else:
+                        kv = i.split('=')
+                    kv[0] = kv[0].strip(' ').strip('\n')
+                    kv[1] = kv[1].strip(' ').strip('\n')
+                    c[kv[0]] = kv[1]
+        cfg = c
+        try:
+            assert ('database' in [i.lower() for i in cfg.keys()]) and ('path' in [i.lower() for i in cfg.keys()])
+            #parse the path to the database
+            path = cfg['path']
+            dbs = cfg['database']
+            try:
+                assert dbs.endswith('.db')
+            except:
+                print('invalid database name. file name must end in .db')
+                exit()
+            if '%file%' in path:
+                self.storage = path.replace('%file%', os.path.realpath(os.path.dirname(__file__))+'/'+dbs)
+            print('database: ', self.storage)
+            
+        except:
+            print('missing configurations. required configurations include: [database, path]. make sure these values are set in the \'config file\'')
+            exit()
+
+
         self.running = True
         self.auth = {'User':None, 'UID': None, 'Key':None}
         self.logged_in = lambda: self.auth['User'] !=None and self.auth['UID']!=None and self.auth['Key']!=None
         self.DB_Manager = database
+        #build the db in case its not
+        db = self.DB_Manager(self.storage)
+        db.build_DB()
+        db = None
     
     def confirm(self, prompt:str):
         '''
@@ -472,61 +518,52 @@ class app:
     def help(self):
         print(
             '''
-            commands are different depending on whether you are logged in or not:
-            note most fields can be entered either directly through the command line or via prompts (in case something is forgotten)
-            
-            commands referenced by 'index' are referring to the index of either the 'users' command (which is only available when not logged in), or the 'ls' command. 
-            syntax as follows:
-                --when the user is logged out of their master account:
-                    users
-                        lists all master users
-                    login <user or index>
-                        logs a master user in
-                    new
-                        prompts user to add master account. this cannot be run with multiple args
-                    update <user or index> <field or index 1-2> <value if !(field==password)>
-                        updates a user. can only be run with 3 args when not altering a password
-                    rm <user or index>
-                        removes a master account
+            certain commands are different depending on whether you are logged in or not:
 
-                --when the user is logged into their master account:
-                    ls [-u -s] <field or index 1-3> <filter>
-                        lists all username/password/site sets
-                        flags:
-                            -s -- filters by site
-                            -u -- filters by username
-                    rm <index>
-                        removes record at index <index>
-                    new <username> <password> <site>
-                        adds a new set of values to the database. if less than 3 args are provided user will be prompted
-                    logout
-                        logs out of the current master account
-                    update <index> <field or index 1-3> <value>
-                        updates field <field> in record at index <index> to value <value>
-                        fields/indexes include:
-                            1 - username
-                            2 - password
-                            3 - site
-                        *for example the command 'update 5 2 abc123' would update the password of record 5 to "abc123"
+            syntax as follows
                 
-                certain commands can be run whether a user is logged in or out
-                    --global cmds
-                        exit
-                            exit the program
-                        help
-                            print this help menu
+                -- when logged out:
+                    commands:
+                        users
+                            lists all master users
+                        login
+                            prompts user to login as a master user
+                        new
+                            prompts user to add master account
+                        update <user or index> <field or index 1-2> <value **if !(field==password)>
+                            updates a master user's username or password by name or index.
+                            updating passwords re-encrypts all content in database
+                        rm <user>
+                            removes a master account/related content
+                -- when logged in:
+                    commands:
+                        ls lists all saved password/account/site sets (with filter and raw options)
+                        rm <number>: removes nth record in the list returned from the ls command
+                        new <username> <password> <*site>: adds new record         
+                        logout logs out user
+                        update <index> <field or index 1-3> <value> (or <field>=<value>)
+
+                --global
+                    **this does not include inner selection menus, prompts, etc
+                    commands:
+                        help 
+                            shows this menu
+                        whoami
+                            prints currently logged in user
                         clc/clear
                             clear the screen
-                        whoami
-                            prints the currently logged in user
-            
+                        exit
+                            exit the program
+                        backup <path>
+                            creates a backup copy of the database to the location specified. syncs to existing file when backup file already exists
+
+                            
+                                
+                        
+        
+
             '''
-
-
-
-
-            
-        )
+                )    
 
     def logout(self):
         if not self.logged_in():
@@ -535,34 +572,28 @@ class app:
         self.auth['UID'] = None
         self.auth['Key'] =None
         print('logged out')
+    
+    def backup(self, path):
+        if not self.storage:
+            print('database does not exist. cannot backup')
+            return False
+        try:
+            name = self.storage.split('/')[-1].split('.')[0]
+            if path:
+                ts = path+'/{}.bak.db'.format(name)
+            else:
+                ts = '{}.bak.db'.format(name)
+            with open(ts, 'wb') as wf:
+                with open(self.storage, 'rb') as rf:
+                    for i in rf:
+                        wf.write(i)
+            print('success. backup written to {}'.format(ts))
+            return True
+        except:
+            print('error parsing path.')
+            return False
+                
 
-    def config(self):
-        '''
-        **gets and configuration iformation from config file
-        steps:
-            read each line from cfg file
-            for each line
-                ignore line if blank or starts with #
-                check if there is a # in the line. split at the # saving first value in array to self
-                if there is an '=' in the remaining text
-                    split the line @ the '=' symbol saving (to object) left side as key and right side as value. return the object
-            
-        '''
-        c = dict() 
-        with open(os.path.realpath(os.path.dirname(__file__))+'/cfg/config', 'r') as cfg:
-            for i in cfg:
-                if i.startswith('#') or '=' not in i:
-                    continue
-                else:
-                    if '#' in i and '=' in i.split('#')[0]:
-                        i = i.split('#')[0]
-                        kv =i.split('=')
-                    else:
-                        kv = i.split('=')
-                    kv[0] = kv[0].strip(' ').strip('\n')
-                    kv[1] = kv[1].strip(' ').strip('\n')
-                    c[kv[0]] = kv[1]
-        return c
 
     def handle_cmd(self, cmd):
         '''
@@ -601,10 +632,14 @@ class app:
                         clear the screen
                     -- exit
                         exit the program
-                    i
+                    -- backup <path>
+                        make a backup copy of the database to location <location>
+                    
                 
 
         '''
+        
+
         #get context:
         if self.logged_in():
             if cmd.lower() == 'logout':
@@ -829,7 +864,7 @@ class app:
                         except:
                             print('field {} is not valid'.format(field))
                             db.DB_disconnect()
-                            return
+                            return False
                         
 
                     elif len(cmd) == 3:
@@ -878,7 +913,6 @@ class app:
             
                 #detect provided cmds
             elif (cmd.lower()).split(' ')[0] == 'add':
-                
                 db = self.DB_Manager(self.storage)
                 db.DB_connect()
                 cmd = cmd.split(' ')
@@ -896,43 +930,18 @@ class app:
                         password = cmd[1:][1]
                         valid =False
                         cnt = 0
-                        while not valid:
-                            if cnt > 3:
-                                print('failed to add user')
-                                db.DB_disconnect
-                                return
-                            valid = getpass.getpass('confirm password: ') == password
-                            cnt +=1
                         print('**this can be a website, webserver, hostname, etc')
                         site = input('site: ')
-
                     elif len(cmd[1:]) == 1:
                         username = cmd[1:][0]
                         valid = False
-                        cnt = 0
-                        while not valid:
-                            if cnt<10:
-                                print('failed to add user. please learn how to type.')
-                                db.DB_disconnect()
-                                return
-                            password = getpass.getpass('password: ')
-                            c = getpass.getpass('confirm: ')
-                            valid = c==password
-                            cnt+=1
+                        password = input('password: ')
                         print('**this can be a website, webserver, hostname, etc')
                         site = input('site: ')
-
                 else:
                     username = input('username: ')
-                    password = getpass.getpass('password: ')
+                    password = input('password: ')
                     valid=False
-                    cnt = 0
-                    while not valid:
-                        if cnt > 10:
-                            print('failed to add user')
-                            return
-                        valid = password == getpass.getpass('confirm: ')
-                        cnt+=1
                     print('**this can be a website, webserver, hostname, etc')
                     site = input('site: ')
                 if (not site or site==''):
@@ -943,7 +952,6 @@ class app:
                 db.add_encrypted_content(self.auth['UID'], username, password, site, self.auth['Key'])
                 print('success')
                 db.DB_disconnect()
-
             elif (cmd.lower()).split(' ')[0] == 'ls':
                 db = self.DB_Manager(self.storage)
                 db.DB_connect()
@@ -1376,10 +1384,6 @@ class app:
                     valid = True
                                 
 
-                    
-
-
-
             elif cmd.lower() == 'new':
                 print('\nCreating new master account.\n')
                 #validate input
@@ -1556,31 +1560,8 @@ class app:
                 
 
     def run(self):
+        #write the stupid lock thing
         self.ascii_art()
-        #get and apply the configuration
-        cfg = self.config()
-        #validate
-        try:
-            assert ('database' in [i.lower() for i in cfg.keys()]) and ('path' in [i.lower() for i in cfg.keys()])
-            #parse the path to the database
-            path = cfg['path']
-            dbs = cfg['database']
-            try:
-                assert dbs.endswith('.db')
-            except:
-                print('invalid database name. file name must end in .db')
-                exit()
-            if '%file%' in path:
-                self.storage = path.replace('%file%', os.path.realpath(os.path.dirname(__file__))+'/'+dbs)
-            print('database: ', self.storage)
-            
-        except:
-            print('missing configurations. required configurations include: [database, path]. make sure these values are set in the \'config file\'')
-            exit()
-        
-         
-            
-
         #start the loop
         while self.running:
             if not self.logged_in():
@@ -1594,31 +1575,25 @@ class app:
                 break
             elif cmd.lower()=='help':
                 self.help()
-            elif  cmd.lower() == 'clear' or cmd.lower() == 'clc':
+                continue
+            elif cmd.split(' ')[0] == 'backup':
+                cmd = cmd.split(' ')
+                if len(cmd)==1:
+                    path = input('path: ')
+                elif len(cmd)==2:
+                    path = cmd[1]
+                self.backup(path)
+            elif cmd.lower() == 'clear' or cmd.lower() == 'clc':
                 subprocess.run('clear')
+                continue
             else:
                 self.handle_cmd(cmd)
 
 
 
 
-#testing
-application = app()
-application.run()
+if __name__ == '__main__':
+    application = app()
+    application.run()
 
 exit()
-db = database('test.db')
-db.DB_connect()
-#db.add_master_account('test_user', 'password123')
-print(db.add_encrypted_content(1, 'bill', 'password123', 'example.net', hashlib.sha256(b'aaa').digest()))
-db.dev_read_all('keyparts')
-db.DB_disconnect() 
-exit()
-
-
-e = crypto(sys.argv[1])
-print('\n\npassword: (plaintext)\n\n', sys.argv[1])
-e_obj = e.encrypt(sys.argv[2])
-print('\n\nencrypted: \n\n', repr(e_obj['text']))
-e_txt = e.decrypt_from_obj(e_obj)
-print('\n\ndecrypted: \n\n', e_txt)
