@@ -537,12 +537,16 @@ class app:
                             removes a master account/related content
                 -- when logged in:
                     commands:
-                        ls lists all saved password/account/site sets (with filter and raw options)
-                        rm <number>: removes nth record in the list returned from the ls command
-                        new <username> <password> <*site>: adds new record         
-                        logout logs out user
+                        ls 
+                            lists all saved password/account/site sets (with filter and raw options)
+                        rm <number> 
+                            removes nth record in the list returned from the ls command
+                        new <username> <password> <*site> 
+                            adds new record         
+                        logout 
+                            logs out user
                         update <index> <field or index 1-3> <value> (or <field>=<value>)
-
+                            updates field <field> of record at index <index> to value <value>
                 --global
                     **this does not include inner selection menus, prompts, etc
                     commands:
@@ -616,23 +620,26 @@ class app:
                         removes a master account/related content
             -- logged in
                 commands:
-                    --ls: lists all saved password/account/site sets (with filter and raw options)
-                    --rm <number>: removes nth record in the list returned from the ls command
-                    --new <username> <password> <*site>: adds new record         
-                    --logout: logs out user
+                    ls 
+                        lists all saved password/account/site sets (with filter and raw options)
+                    rm
+                        <number>: removes nth record in the list returned from the ls command
+                    new
+                        <username> <password> <*site>: adds new record         
+                    logout
+                        logs out user
             the other context for commands is global 
 
             --global:
-                **all of these commands must be executable from any context or within any loop
-                commands:
-                    --help
-                    --whoami
+                    help 
+                        displays this help box
+                    whoami
                         prints currently logged in user
-                    -- clc/clear
+                    clc/clear
                         clear the screen
-                    -- exit
+                    exit
                         exit the program
-                    -- backup <path>
+                    backup <path>
                         make a backup copy of the database to location <location>
                     
                 
