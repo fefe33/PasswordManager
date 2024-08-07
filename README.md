@@ -20,7 +20,7 @@ many commands allow for both prompt based input or argument based input. indexes
 <ul>
   <li><b>new</b> -- shows user set of prompts to set up a new master user account</li>
   <li><b>update &lt;index&gt; &lt;field or field index&gt; <em>**if field is not password</em> &lt;value&gt;</b> -- update an existing master user or master user's password. a value may not be repeated</li>
-  <li><b>rm</b>-- removes a specific user</li>
+  <li><b>rm &lt;user or uid&gt;</b>-- removes a specific user</li>
   <li><b>login &lt;username or index&gt;></b>-- logs in as specific user. may also be used followed by a name or index (relative to the output of the users command)</li>
   <li><b>users</b> -- lists all created users</li>
   <li><b>whoami</b> -- will always return "not logged in" in this context</li>
