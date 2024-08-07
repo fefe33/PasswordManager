@@ -1,5 +1,5 @@
 # PasswordManager
-a terminal based password manager with simple "encryption".
+a terminal based password manager with encryption.
 
 ## usage
 the app is used in a manner much similar to the metasploit-framework. upon launch the user is thrown into a shell-like prompt in which different unix-like commands may be typed.
@@ -8,9 +8,10 @@ it requires users create user accounts under which records may be saved, modifie
 
 the database can be configured via the config file (%filepath%/cfg/config). by default the database is set to be in the same directory as the path to the file (referenced in the cfg file by path=%file%). the databases name by default is default.db (as seen in the config file). the program will always look for an adjacent directory named 'cfg', and for a file inside of it named 'config'. the program will throw an error and not work if this file is not present
 
+## ciphers/security
+the program uses a 64 byte (486 bit) feistel cipher with rotating intermediary swap operations. it iterates over itself 16 times, and uses cyptographically related (CBC) hash values as keys with each iteration. a special syntax may be used to specify swapping operations (specified in the class definitions). no content, decryption keys, or passwords are stored directly as plaintext and all encrypted values are salted before being stored.
 
-## IMPORTANT NOTE
-the algorithm for encryption isnt (as far as I know) secure by any means. but i wrote the class with modifyiablity in mind so that ideally one could write or import a library containing a more secure cipher and still make it work with relative ease. as far as i know, it should work with most symmetric encryption algorithms (so long as it takes a 256 bit or less key).
+while this all probably sounds good, it does not imply it is a secure or optimal implementation of the algorithm, or that it should actually be used for security.
 
 ## syntax
 many commands allow for both prompt based input or argument based input. indexes may also be specified in certain contexts.
@@ -40,3 +41,5 @@ many commands allow for both prompt based input or argument based input. indexes
   <li>exit -- in most contexts, one should be able to exit by simply typing exit.</li>
   <li>help -- brings up help menu</li>
 </ul>
+
+
