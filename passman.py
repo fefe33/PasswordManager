@@ -1,4 +1,7 @@
 import hashlib, hmac, base64, sqlite3, sys, getpass, subprocess, os
+#import the feistel class
+from ciphers.feistel import feistel
+
 #this is the class for encryption related stuff
 class crypto:
 
@@ -9,25 +12,22 @@ class crypto:
         elif type(key)==str:
             self.key = hashlib.sha256(key.encode()).digest()
 
-    ####THIS FUNCTION DOES NOT IMPLIMENT REAL ENCRYPTION AND SHOULD BE MODIFIED BEFORE USE IN SECURE CONTEXTS
-    #TODO: make this a real/more secure algorithm
+    ####THIS FUNCTION DOES NOT IMPLIMENT ENCRYPTION THAT IS SECURE TO MODERN STANDARDS
+    #
     def encrypt(self, string:str):
+        #get the hash of the original string for K0
         if string == '' or not string:
             string = 'NULL'
         output = dict()
-        #encode
-        string = base64.b64encode(string.encode())
-        while len(string)%32!=0:
-            string = string + b'\x00'
-        #encrypt using the hash of the **KEY
-        init_hash = hashlib.sha256(string).digest()
-        output['text'] = b''
-        output['keypart']=b'' 
-        for i in range(len(string)//32):
-            for j in range(32):
-                output['text']=output['text']+(string[i*32:(i*32)+32][j]^init_hash[j]).to_bytes()
-                if i==0:
-                    output['keypart']=output['keypart']+(self.key[j]^init_hash[j]).to_bytes()
+        #0 == ciphertext,1 == plaintext
+        f = feistel(string, 1) 
+        f.encrypt(16)
+        o = f.pull()
+        output['text'] = o['value']
+        #generate the keypart
+        output['keypart'] = b''
+        for i in range(32):
+            output['keypart']=output['keypart'] + (o['key'][i]^self.key[i]).to_bytes()
         '''
         to reiterate:          
 
@@ -50,21 +50,15 @@ class crypto:
         for i in range(32):
             key = key+(self.key[i]^keypart[i]).to_bytes()
 
-        # decrypt the text  
-        out = b''
-        for j in range(len(ctext)//32):
-            for i in range(32):
-                out = out+(ctext[j*32:(j*32)+32][i]^key[i]).to_bytes()
+        # decrypt the text  -- init in 0 state (as cipher text)
+        f = feistel(ctext ,0)
+        #decrypt the cipher text
+        f.decrypt(16, key)
+        #pull the value
+        o = f.pull()
+        return o['value'].decode()
         
-        # remove the padding and decode
-        out = out.rstrip(b'\x00')
-        try:
-            out = base64.b64decode(out)
-            return out.decode()
-        except:
-            return 'ERROR'
         
-
     def decrypt_from_obj(self, obj):#this requires that you include the valid hash in the object ()
         try:
             ctext = obj['text']
