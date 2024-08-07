@@ -18,28 +18,28 @@ many commands allow for both prompt based input or argument based input. indexes
 
 ## when logged out
 <ul>
-  <li>new -- shows user set of prompts to set up a new master user account</li>
-  <li>update &lt;index&gt; &lt;field or field index&gt; **if field is not password &lt;value&gt;-- update an existing master user or master user's password. a value may not be repeated</li>
-  <li>rm -- removes a specific user</li>
-  <li>login &lt;username or index&gt;>-- logs in as specific user. may also be used followed by a name or index (relative to the output of the users command)</li>
-  <li>users -- lists all created users</li>
-  <li>whoami -- will always return "not logged in" in this context</li>
+  <li><b>new</b> -- shows user set of prompts to set up a new master user account</li>
+  <li><b>update &lt;index&gt; &lt;field or field index&gt; <em>**if field is not password</em> &lt;value&gt;</b> -- update an existing master user or master user's password. a value may not be repeated</li>
+  <li><b>rm</b>-- removes a specific user</li>
+  <li><b>login &lt;username or index&gt;></b>-- logs in as specific user. may also be used followed by a name or index (relative to the output of the users command)</li>
+  <li><b>users</b> -- lists all created users</li>
+  <li><b>whoami</b> -- will always return "not logged in" in this context</li>
 </ul>
 
 ## when logged in
 <ul>
-  <li>logout -- logs out the master user that is currently logged in </li>
-  <li>whoami -- returns the name of the current master user</li>
-  <li>ls -- when provided with no arguments lists all records. when run with -u <filter> will filter by username, and -s <filter> to filter by site (regex not supported)</li>
-  <li>update &lt;index&gt; &lt;field&gt;=&lt;value&gt; -- updates a username, site, or password of a specific record by index </li>
+  <li><b>logout</b> -- logs out the master user that is currently logged in </li>
+  <li><b>whoami</b>-- returns the name of the current master user</li>
+  <li><b>ls</b> -- when provided with no arguments lists all records. when run with -u <filter> will filter by username, and -s <filter> to filter by site (regex not supported)</li>
+  <li><b>update &lt;index&gt; &lt;field&gt;=&lt;value&gt;</b> -- updates a username, site, or password of a specific record by index </li>
 </ul>
     
 ## global commands
 <ul>
-  <li>backup <path> -- makes backup copy of current database at path &lt;path&gt;</li>
-  <li>clear or clc -- clears screen</li>
-  <li>exit -- in most contexts, one should be able to exit by simply typing exit.</li>
-  <li>help -- brings up help menu</li>
+  <li><b>backup &lt;path&gt;</b> -- makes backup copy of current database at path &lt;path&gt;</li>
+  <li><b>clear</b> or <b>clc</b> -- clears screen</li>
+  <li><b>exit</b> -- in most contexts, one should be able to exit by simply typing exit.</li>
+  <li><b>help</b> -- brings up help menu</li>
 </ul>
 
 
