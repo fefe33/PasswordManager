@@ -9,7 +9,7 @@ it requires users create user accounts under which records may be saved, modifie
 the database can be configured via the config file (%filepath%/cfg/config). by default the database is set to be in the same directory as the path to the file (referenced in the cfg file by path=%file%). the databases name by default is default.db (as seen in the config file). the program will always look for an adjacent directory named 'cfg', and for a file inside of it named 'config'. the program will throw an error and not work if this file is not present
 
 ## ciphers/security
-the program uses a 64 byte (512 bit) feistel cipher with rotating intermediary swap operations. it iterates over itself 16 times, and uses cyptographically related (CBC) hash values as keys with each iteration. a special syntax may be used to specify swapping operations (specified in the class definitions). no content, decryption keys, or passwords are stored directly as plaintext and all encrypted values are salted before being stored.
+the program uses a 64 byte (512 bit) feistel cipher with rotating intermediary swap operations. it iterates over itself 16 times, and uses cyptographically related hash values as keys with each iteration. a special syntax may be used to specify swapping operations (specified in the class definitions). no content, decryption keys, or passwords are stored directly as plaintext and all encrypted values are salted before being stored.
 
 while this all probably sounds good, it does not imply it is a secure or optimal implementation of the algorithm, or that it should actually be used for security.
 
