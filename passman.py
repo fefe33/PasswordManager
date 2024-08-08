@@ -214,8 +214,8 @@ class database:
         contentIDs = self.c.fetchall()
         if len(contentIDs) != 0:
             for i in contentIDs:
-                self.c.execute('DELETE FROM Keyparts WHERE ContentID=(?)', (i,))
-                self.c.execute('DELETE FROM Content WHERE ContentID=(?)', (i,))
+                self.c.execute('DELETE FROM Keyparts WHERE ContentID=(?)', (i[0],))
+                self.c.execute('DELETE FROM Content WHERE ContentID=(?)', (i[0],))
                 self.Cx.commit()
         else:
             self.c.execute('DELETE FROM Users WHERE UserID=(?)', (UID,))
@@ -954,6 +954,7 @@ class app:
                 print('success')
                 db.DB_disconnect()
             elif (cmd.lower()).split(' ')[0] == 'ls':
+                print('decrypting values...')
                 db = self.DB_Manager(self.storage)
                 db.DB_connect()
                 #check if there is more than one command
